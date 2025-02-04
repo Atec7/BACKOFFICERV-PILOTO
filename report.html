@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="img/icone.png" type="">
+    <title>Reportar Um Problema BackOffice</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #123;
+        }
+        h2 {
+            color: white;
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        p {
+            color: white;
+            text-align: center;
+        }
+        a {
+            text-decoration: none;
+            color: white;
+        }
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        select, textarea, input[type="file"] {
+            width: 100%;
+            margin-bottom: 16px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: green;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto;
+            border-radius: 50%;
+            border-style: solid;
+            color: white;
+            padding: 50px white;
+        }
+        #success-message {
+            display: none;
+            color: white;
+            background-color: green;
+            padding: 10px;
+            text-align: center;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .clock {
+            font-size: 14px;
+            text-align: center;
+            color: white;
+        }
+
+        .obs{
+            color: green;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+    </style>
+   
+</head>
+
+<body>
+    <h2>Reportar Um Problema <br>BackOffice Perdas</h2><h2>⚠</h2>
+    <img class="logo" src="img/logo.jpg" alt="">
+    <p><b>Grupo Partnership - Rio Verde/GO 2025</b></p>
+    <div class="clock" id="clock"></div>
+    <p id="success-message">Imagem anexada com sucesso!</p>
+    <form id="ssos-form">
+        <label for="equipe">🚙Equipe:</label>
+        <select id="equipe" name="equipe">
+            <option value="RIOF001M">RIOF001M</option>
+            <option value="RIOF002M">RIOF002M</option>
+            <option value="RIOF003M">RIOF003M</option>
+            <option value="RIOF004M">RIOF004M</option>
+            <option value="RIOF005M">RIOF005M</option>
+            <option value="RIOF006M">RIOF006M</option>
+            <option value="RIOF007M">RIOF007M</option>
+            <option value="RIOF008M">RIOF008M</option>
+            <option value="RIOF009M">RIOF009M</option>
+            <option value="RIOF10M">RIOF10M</option>
+            <option value="RIOF11M">RIOF11M</option>
+        </select>
+
+        <label for="solicitacao">📋Problema:</label>
+        <select id="solicitacao" name="solicitacao">
+            <option value="2020-Problema na Abertura de Turno">2020-Problema na Abertura de Turno ⚠</option>
+            <option value="2021-SS Não Caiu Para Minha Equipe">2021-SS Não Caiu Para Minha Equipe ⚠</option>
+            <option value="2022-Não Consigo Lançar Serviços No Jupiter">2022-Não Consigo Lançar Serviços No Júpiter ⚠</option>
+            <option value="2023-Problema no Fechamento de Turno">2023-Problema no Fechamento de Turno ⚠</option>
+            <option value="2024-Outro Problema">2024-Outro Problema</option>
+        </select>
+
+        <label for="fotos">📷Tirar Foto:</label>
+        <input type="file" id="fotos" name="fotos" accept="image/*" multiple capture="camera" onchange="exibirMensagemSucesso()">
+
+        <label for="printes">📱Anexar Print:</label>
+        <input type="file" id="printes" name="printes" accept="image/*" multiple onchange="exibirMensagemSucesso()">
+
+        <label for="observacao">✍🏻Observação:</label>
+        <textarea class="obs" id="observacao" name="observacao" rows="4" cols="50" placeholder="Digite aqui mais detalhes do Seu problema..."></textarea>
+
+        <button type="button" onclick="enviarWhatsApp()">Reportar Problema <b>↗</b></button>
+    </form>
+    <br>
+    <button>
+        <a href="index.html"> <b>⬅Voltar ao Painel de Solicitações</b></a>
+    </button>
+    <script>
+        function exibirMensagemSucesso() {
+            var successMessage = document.getElementById('success-message');
+            successMessage.style.display = 'block';
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 2000);
+        }
+
+        function enviarWhatsApp() {
+            var equipe = document.getElementById('equipe').value;
+            var solicitacao = document.getElementById('solicitacao').value;
+            var observacao = document.getElementById('observacao').value;
+            var fotos = document.getElementById('fotos').files;
+            var printes = document.getElementById('printes').files;
+
+            var linkBase = 'https://api.whatsapp.com/send?phone=5564996151084&text=' +
+                'Equipe: ' + equipe + '%0A' +
+                'Solicitação: ' + solicitacao + '%0A' +
+                'Observação: ' + observacao;
+
+            var uploadImagens = function(arquivos, callback) {
+                var urls = [];
+                var totalArquivos = arquivos.length;
+                var arquivosEnviados = 0;
+
+                for (var i = 0; i < totalArquivos; i++) {
+                    var reader = new FileReader();
+                    reader.onload = (function(readerIndex) {
+                        return function(e) {
+                            var base64Image = e.target.result.split(',')[1];
+                            var descricaoImagem = 'Equipe: ' + equipe + '\n' +
+                                                  'Solicitação: ' + solicitacao + '\n' +
+                                                  'Observação: ' + observacao;
+                            var imageUrl = 'https://api.imgbb.com/1/upload?key=a8a38c3afbdf5e80eb93015cc9d5e8ff&name=' + encodeURIComponent(descricaoImagem);  // Sua chave de API
+
+                            var formData = new FormData();
+                            formData.append('image', base64Image);
+
+                            fetch(imageUrl, {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data && data.data && data.data.url) {
+                                    urls.push(data.data.url);
+                                    arquivosEnviados++;
+                                    if (arquivosEnviados === totalArquivos) {
+                                        callback(urls);
+                                        exibirMensagemSucesso();
+                                    }
+                                } else {
+                                    throw new Error('Erro ao receber URL da imagem.');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Erro ao enviar a imagem:', error);
+                                alert('Erro ao enviar a imagem. Tente novamente.');
+                            });
+                        };
+                    })(i);
+                    reader.readAsDataURL(arquivos[i]);
+                }
+            };
+
+            var todasImagens = [...fotos, ...printes];
+            if (todasImagens.length > 0) {
+                uploadImagens(todasImagens, function(urls) {
+                    var urlsImagens = urls.map(url => '%0AImagem: ' + url).join('');
+                    var linkCompleto = linkBase + urlsImagens;
+                    window.open(linkCompleto, '_blank');
+                });
+            } else {
+                window.open(linkBase, '_blank');
+            }
+        }
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timeString = `${hours}:${minutes}:${seconds}`;
+            
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('pt-BR', options);
+            
+            document.getElementById('clock').textContent = `${dateString} ${timeString}`;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock(); 
+    </script>
+</body>
+</html>

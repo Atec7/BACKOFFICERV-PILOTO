@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronômetro de Solicitação</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #123;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .subheader {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        #cronometro {
+            font-size: 72px;
+            font-weight: bold;
+            color: green;
+        }
+        #cobranca-button {
+            display: none;
+            font-size: 24px;
+            padding: 15px 30px;
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 30px;
+        }
+        #cobranca-button:hover {
+            background-color: darkgreen;
+        }
+        p{
+            color: #123;
+        }
+        .logo{
+            border-radius: 50%;
+            border-style: solid;
+            border-color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img class="logo" src="img/logo.jpg" alt="" srcset="">
+        <div class="header">Solicitação Enviada</div>
+        <p>Grupo Partnership Rio Verde/GO</p>
+        <div class="subheader">Aguarde por favor enquanto processamos sua solicitação.</div>
+        <div id="cronometro">02:00</div>
+        <button id="cobranca-button" onclick="enviarCobranca()">Enviar Cobrança</button>
+    </div>
+
+    <script>
+        function iniciarCronometro() {
+            var cronometro = document.getElementById('cronometro');
+            var button = document.getElementById('cobranca-button');
+            var tempoRestante = 120;  // 2 minutos em segundos
+
+            var intervalo = setInterval(function() {
+                var minutos = Math.floor(tempoRestante / 60);
+                var segundos = tempoRestante % 60;
+                minutos = minutos < 10 ? '0' + minutos : minutos;
+                segundos = segundos < 10 ? '0' + segundos : segundos;
+                cronometro.textContent = minutos + ':' + segundos;
+
+                if (tempoRestante <= 0) {
+                    clearInterval(intervalo);
+                    button.style.display = 'block';
+                }
+                tempoRestante--;
+            }, 1000);
+        }
+
+        function enviarCobranca() {
+            var mensagemCobranca = 'Olá! Gostaríamos de saber se há alguma atualização sobre a solicitação que foi feita.\n\n' +
+                'Agradecemos a sua atenção e aguardamos a sua resposta.';
+
+            var linkCobranca = 'https://api.whatsapp.com/send?phone=556496151084&text=' + encodeURIComponent(mensagemCobranca);
+            window.open(linkCobranca, '_blank');
+        }
+
+        window.onload = iniciarCronometro;
+    </script>
+</body>
+</html>

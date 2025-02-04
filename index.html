@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="img/icone.png" type="">
+    <title>BackOfficeRV</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #a7e203;
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .progress-container {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            width: 0%;
+            height: 30px;
+            background-color: #007bff;
+            border-radius: 4px;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+            transition: width 3s;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto;
+            border-radius: 50%;
+            border-style: solid;
+            color: white;
+            padding: 50px white;
+        }
+        .buttons {
+            display: none;
+            text-align: center;
+            margin-top: 90px;
+        }
+        p {
+            text-align: center;
+        }
+        .buttons button {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 30px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.2em;
+        }
+        .buttons button:hover {
+            background: green;
+        }
+        .buttons button i {
+            margin-right: 10px;
+        }
+        .notice {
+            display: none;
+            text-align: center;
+            background-color: #fff;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #007bff;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        @media (max-width: 768px) {
+            .buttons button {
+                width: 100%;
+                margin: 10px 0;
+                font-size: 1em;
+            }
+            .notice {
+                font-size: 1em;
+            }
+        }
+        a {
+            text-decoration: none;
+            color: white;
+        }
+        .txtbtn {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <img class="logo" src="img/logo.jpg" alt="">
+    <h2>BackOffice Rio Verde/GO</h2>
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar">0%</div>
+    </div>
+    <div class="buttons" id="buttons">
+        <button id="open-request"><i class="fa fa-file"></i>
+            <a href="solicitacao.html"><h2 class="txtbtn">Abrir Solicitação</h2></a>
+        </button>
+        <button id="report-problem"><i class="fa fa-exclamation-triangle">
+            </i><a href="report.html"><h2 class="txtbtn">Problema no Júpiter ou GS</h2></a>
+        </button>
+    </div>
+    <div class="notice" id="notice">
+        <b>⚠ Aviso Importante: <br></b> Manutenção agendada para 20/02/2025 às 12:00.
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var progressBar = document.getElementById('progress-bar');
+            var buttons = document.getElementById('buttons');
+            var notice = document.getElementById('notice');
+            var width = 0;
+            var interval = setInterval(function() {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    progressBar.innerHTML = 'Seja Bem Vindo!';
+                    buttons.style.display = 'block';
+                    notice.style.display = 'block';
+                } else {
+                    width++;
+                    progressBar.style.width = width + '%';
+                    progressBar.innerHTML = width + '%';
+                }
+            }, 30); // 30 ms para completar em 3 segundos (100% / 3s)
+        });
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</body>
+</html>
