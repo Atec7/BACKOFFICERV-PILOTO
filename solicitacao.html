@@ -29,7 +29,6 @@
         form {
             background: #fff;
             padding: 20px;
-            
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
@@ -125,10 +124,10 @@
         </select>
 
         <label for="fotos">📷Tirar Foto:</label>
-        <input type="file" id="fotos" name="fotos" accept="image/*" multiple capture="camera" onchange="exibirMensagemSucesso()" required>
+        <input type="file" id="fotos" name="fotos" accept="image/*" multiple capture="camera" onchange="verificarObrigatoriedadeFoto()" required>
 
         <label for="printes">📱Anexar Print:</label>
-        <input type="file" id="printes" name="printes" accept="image/*" multiple onchange="exibirMensagemSucesso()">
+        <input type="file" id="printes" name="printes" accept="image/*" multiple onchange="verificarObrigatoriedadeFoto()">
 
         <label for="observacao">✍🏻Observação:</label>
         <textarea class="obs" id="observacao" name="observacao" rows="4" cols="50" placeholder="Digite aqui mais detalhes da sua Solicitação! Exemplo: ss, bairro, etc..."></textarea>
@@ -141,137 +140,149 @@
     </button>
 
     <script>
-   function exibirMensagemSucesso() {
-    var successMessage = document.getElementById('success-message');
-    successMessage.style.display = 'block';
-    setTimeout(function() {
-        successMessage.style.display = 'none';
-    }, 2000);
-}
+        function exibirMensagemSucesso() {
+            var successMessage = document.getElementById('success-message');
+            successMessage.style.display = 'block';
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 2000);
+        }
 
-function desenharTextoNaImagem(imagem, texto, dataHora, callback) {
-    var canvas = document.createElement('canvas');
-    var ctx = canvas.getContext('2d');
-    var img = new Image();
-    img.onload = function() {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.drawImage(img, 0, 0);
-
-        // Fundo semi-transparente
-        ctx.fillStyle = 'rgba(0, 128, 0, 0.5)';
-        var padding = 20; // Padding para o texto
-        var rectHeight = 320; // Ajusta a altura do retângulo para acomodar o texto e a data/hora
-        ctx.fillRect(padding, padding, canvas.width - 2 * padding, rectHeight);
-
-        // Configurações do texto
-        ctx.font = '36px Arial'; // Define o tamanho da fonte como 36px
-        ctx.fillStyle = 'white';
-        var maxWidth = canvas.width - 4 * padding;
-        var lineHeight = 45; // Ajusta a altura da linha
-
-        // Desenha o texto
-        wrapText(ctx, texto, 2 * padding, 2 * padding + 35, maxWidth, lineHeight);
-        ctx.fillText(dataHora, 2 * padding, padding + rectHeight - 20); // Adiciona a data e hora no final do retângulo
-
-        callback(canvas.toDataURL('image/jpeg', 0.9));
-    };
-    img.src = URL.createObjectURL(imagem);
-}
-
-function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-    var lines = text.split('\n');
-    for (var j = 0; j < lines.length; j++) {
-        var words = lines[j].split(' ');
-        var line = '';
-
-        for (var n = 0; n < words.length; n++) {
-            var testLine = line + words[n] + ' ';
-            var metrics = ctx.measureText(testLine);
-            var testWidth = metrics.width;
-            if (testWidth > maxWidth && n > 0) {
-                ctx.fillText(line, x, y);
-                line = words[n] + ' ';
-                y += lineHeight;
+        function verificarObrigatoriedadeFoto() {
+            var printes = document.getElementById('printes').files;
+            var fotos = document.getElementById('fotos');
+            
+            if (printes.length > 0) {
+                // Se houver um print, a foto deixa de ser obrigatória
+                fotos.removeAttribute('required');
             } else {
-                line = testLine;
+                // Se não houver print, a foto é obrigatória
+                fotos.setAttribute('required', true);
             }
         }
-        ctx.fillText(line, x, y);
-        y += lineHeight; // Mantém o espaçamento entre as linhas consistente
-    }
-}
 
-function enviarWhatsApp() {
-    var equipe = document.getElementById('equipe').value;
-    var solicitacao = document.getElementById('solicitacao').value;
-    var observacao = document.getElementById('observacao').value;
-    var fotos = document.getElementById('fotos').files;
-    var printes = document.getElementById('printes').files;
-    var dataHora = new Date().toLocaleString('pt-BR');
-    var linkBase = 'https://api.whatsapp.com/send?phone=5562996341986&text=' + 'Equipe: ' + equipe + '%0A' + 'Solicitação: ' + solicitacao + '%0A' + 'Observação: ' + observacao;
+        function desenharTextoNaImagem(imagem, texto, dataHora, callback) {
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            var img = new Image();
+            img.onload = function() {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
 
-    var uploadImagens = function(arquivos, callback) {
-        var urls = [];
-        var totalArquivos = arquivos.length;
-        var arquivosEnviados = 0;
+                // Fundo semi-transparente
+                ctx.fillStyle = 'rgba(0, 128, 0, 0.5)';
+                var padding = 20; // Padding para o texto
+                var rectHeight = 320; // Ajusta a altura do retângulo para acomodar o texto e a data/hora
+                ctx.fillRect(padding, padding, canvas.width - 2 * padding, rectHeight);
 
-        for (var i = 0; i < totalArquivos; i++) {
-            desenharTextoNaImagem(arquivos[i], 'Equipe: ' + equipe + '\n' + 'Solicitação: ' + solicitacao + '\n' + 'Observação: ' + observacao, dataHora, function(base64Image) {
-                var formData = new FormData();
-                formData.append('image', base64Image.split(',')[1]);
+                // Configurações do texto
+                ctx.font = '36px Arial'; // Define o tamanho da fonte como 36px
+                ctx.fillStyle = 'white';
+                var maxWidth = canvas.width - 4 * padding;
+                var lineHeight = 45; // Ajusta a altura da linha
 
-                fetch('https://api.imgbb.com/1/upload?key=a8a38c3afbdf5e80eb93015cc9d5e8ff', { method: 'POST', body: formData })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data && data.data && data.data.url) {
-                            urls.push(data.data.url);
-                            arquivosEnviados++;
-                            if (arquivosEnviados === totalArquivos) {
-                                callback(urls);
-                                exibirMensagemSucesso();
-                            }
-                        } else {
-                            throw new Error('Erro ao receber URL da imagem.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erro ao enviar a imagem:', error);
-                        alert('Erro ao enviar a imagem. Tente novamente.');
-                    });
-            });
+                // Desenha o texto
+                wrapText(ctx, texto, 2 * padding, 2 * padding + 35, maxWidth, lineHeight);
+                ctx.fillText(dataHora, 2 * padding, padding + rectHeight - 20); // Adiciona a data e hora no final do retângulo
+
+                callback(canvas.toDataURL('image/jpeg', 0.9));
+            };
+            img.src = URL.createObjectURL(imagem);
         }
-    };
 
-    var todasImagens = [...fotos, ...printes];
-    if (todasImagens.length > 0) {
-        uploadImagens(todasImagens, function(urls) {
-            var urlsImagens = urls.map(url => '%0AImagem: ' + url).join('');
-            var linkCompleto = linkBase + urlsImagens;
-            window.open(linkCompleto, '_blank');
-            window.location.href = "espera.html"; 
-        });
-    } else {
-        window.open(linkBase, '_blank');
-        window.location.href = "espera.html"; 
-    }
-}
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            var lines = text.split('\n');
+            for (var j = 0; j < lines.length; j++) {
+                var words = lines[j].split(' ');
+                var line = '';
 
-function updateClock() {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    const timeString = `${hours}:${minutes}:${seconds}`;
+                for (var n = 0; n < words.length; n++) {
+                    var testLine = line + words[n] + ' ';
+                    var metrics = ctx.measureText(testLine);
+                    var testWidth = metrics.width;
+                    if (testWidth > maxWidth && n > 0) {
+                        ctx.fillText(line, x, y);
+                        line = words[n] + ' ';
+                        y += lineHeight;
+                    } else {
+                        line = testLine;
+                    }
+                }
+                ctx.fillText(line, x, y);
+                y += lineHeight; // Mantém o espaçamento entre as linhas consistente
+            }
+        }
 
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    const dateString = now.toLocaleDateString('pt-BR', options);
-    document.getElementById('clock').textContent = `${dateString} ${timeString}`;
-}
+        function enviarWhatsApp() {
+            var equipe = document.getElementById('equipe').value;
+            var solicitacao = document.getElementById('solicitacao').value;
+            var observacao = document.getElementById('observacao').value;
+            var fotos = document.getElementById('fotos').files;
+            var printes = document.getElementById('printes').files;
+            var dataHora = new Date().toLocaleString('pt-BR');
+            var linkBase = 'https://api.whatsapp.com/send?phone=5562996341986&text=' + 'Equipe: ' + equipe + '%0A' + 'Solicitação: ' + solicitacao + '%0A' + 'Observação: ' + observacao;
 
-setInterval(updateClock, 1000);
-updateClock();
+            var uploadImagens = function(arquivos, callback) {
+                var urls = [];
+                var totalArquivos = arquivos.length;
+                var arquivosEnviados = 0;
 
+                for (var i = 0; i < totalArquivos; i++) {
+                    desenharTextoNaImagem(arquivos[i], 'Equipe: ' + equipe + '\n' + 'Solicitação: ' + solicitacao + '\n' + 'Observação: ' + observacao, dataHora, function(base64Image) {
+                        var formData = new FormData();
+                        formData.append('image', base64Image.split(',')[1]);
+
+                        fetch('https://api.imgbb.com/1/upload?key=a8a38c3afbdf5e80eb93015cc9d5e8ff', { method: 'POST', body: formData })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data && data.data && data.data.url) {
+                                    urls.push(data.data.url);
+                                    arquivosEnviados++;
+                                    if (arquivosEnviados === totalArquivos) {
+                                        callback(urls);
+                                        exibirMensagemSucesso();
+                                    }
+                                } else {
+                                    throw new Error('Erro ao receber URL da imagem.');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Erro ao enviar a imagem:', error);
+                                alert('Erro ao enviar a imagem. Tente novamente.');
+                            });
+                    });
+                }
+            };
+
+            var todasImagens = [...fotos, ...printes];
+            if (todasImagens.length > 0) {
+                uploadImagens(todasImagens, function(urls) {
+                    var urlsImagens = urls.map(url => '%0AImagem: ' + url).join('');
+                    var linkCompleto = linkBase + urlsImagens;
+                    window.open(linkCompleto, '_blank');
+                    window.location.href = "espera.html"; 
+                });
+            } else {
+                window.open(linkBase, '_blank');
+                window.location.href = "espera.html"; 
+            }
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timeString = `${hours}:${minutes}:${seconds}`;
+
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('pt-BR', options);
+            document.getElementById('clock').textContent = `${dateString} ${timeString}`;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
     </script>
 </body>
 </html>
